@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<meta name="referrer" content="no-referrer">
+<title>Geschützter Bereich</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px;
+    background: #0d1117; color: #e6edf3;
+    font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .card {
+    width: 100%; max-width: 34rem; background: #161b22; border: 1px solid #30363d;
+    border-radius: 14px; padding: 2rem 1.75rem; box-shadow: 0 12px 40px rgb(0 0 0 / .45);
+  }
+  .lock { font-size: 2rem; line-height: 1; }
+  h1 { margin: .75rem 0 .35rem; font-size: 1.35rem; letter-spacing: -.01em; }
+  p.sub { margin: 0 0 1.5rem; color: #8b949e; font-size: .9rem; }
+  label { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: #8b949e; margin-bottom: .4rem; }
+  input[type=password] {
+    width: 100%; padding: .7rem .85rem; border-radius: 8px; font-size: 1rem;
+    background: #0d1117; color: #e6edf3; border: 1px solid #30363d; outline: none;
+  }
+  input[type=password]:focus { border-color: #2f81f7; box-shadow: 0 0 0 3px rgb(47 129 247 / .25); }
+  button {
+    width: 100%; margin-top: .9rem; padding: .7rem 1rem; border: 0; border-radius: 8px;
+    background: #238636; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+  }
+  button:hover:not(:disabled) { background: #2ea043; }
+  button:disabled { opacity: .6; cursor: progress; }
+  #msg { min-height: 1.4rem; margin: .8rem 0 0; font-size: .875rem; color: #8b949e; }
+  #msg[data-state=error] { color: #f85149; }
+  #msg[data-state=ok] { color: #3fb950; }
+  footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #21262d; color: #6e7681; font-size: .75rem; }
+  #app { width: 100%; max-width: 46rem; }
+  #app h1 { font-size: 1.6rem; }
+  #app a { color: #2f81f7; }
+  code { background: #21262d; padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+</style>
+</head>
+<body>
+<section class="card" id="gate">
+  <div class="lock" aria-hidden="true">&#128274;</div>
+  <h1>Geschützter Bereich</h1>
+  <p class="sub">Dieser Inhalt ist mit AES-256 verschl&uuml;sselt. Die Entschl&uuml;sselung findet ausschlie&szlig;lich in deinem Browser statt.</p>
+  <form id="f" autocomplete="off">
+    <label for="pw">Passwort</label>
+    <input id="pw" type="password" name="pw" required autofocus autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button id="go" type="submit">Entschl&uuml;sseln</button>
+  </form>
+  <p id="msg" role="status" aria-live="polite"></p>
+  <footer>Kein Passwort wird &uuml;bertragen oder gespeichert. Ohne korrektes Passwort bleibt der Inhalt unlesbar.</footer>
+</section>
+<main id="app" hidden></main>
+<noscript><p style="color:#f85149">JavaScript wird ben&ouml;tigt, um diese Seite zu entschl&uuml;sseln.</p></noscript>
+<script id="p" type="application/json">{"v":1,"alg":"AES-256-GCM","kdf":"PBKDF2-SHA256","iter":600000,"salt":"Q+qwnYjT/mpFQKFkKLv+aQ==","iv":"LKOFbZEXbwOEONG+","ct":"xjuP9cE7LvktFjqIc/YpDgup2aN7E4XxzH/3ikDDEZTUhMLSLkeSHIxIIQK6kTFNzs02HetNJ5NZguWAltvDU9kW0D3YmXKKpczcoaD/ILj/1TOkKiFGxrAeAcxam75V2DoTXFWzpo520HbkJUGXP872FgyP7mhsoAbTPwXOWV6R+6oMgkk+XO1IN+LB9sc1dTm98gGu+2TXqD8IrCAmQI3c5Yv2aMJv4EKUvDdghXbGpxPg77My97jIgCDfnwMByetDc5EExyVXpCfInRwRq4GGj4uIpzS3izL8QMTenhVqofKxRP1k4GSeuQ9TxMdFX3iO9ixi/S+5hkgpKpWnoyHW6uqoWbXiMVIFtj3nxb7ofooYxbS+E2On+DiCUHw0lGK/6MLPx5qxPk2i3cPRTYISIYileMBcQPiQPsse5jFVnxMS2IN1iK4Bf1Lqdr1mX6NsDwzp4wVW8oLD1I4zWgk5i29932+zhyE+8QSKdthojYtnzcot5fFxvSdD1lyHXl0xMvNM+9iTdDc+dTrY/C0UHt4nFhDeZCXVdvm0hdi0mrNz+DtmACGfb6VEr/8LGnIW0E5x5+O3oWMSPTtPLB5jFrk4Nv7y9wW9zUnL00eTg/jYKd3ImXsbWikRGfD3WznEjYcyul9TOfzUEagCutwvM6fwqzpU45fYDqgAwHVwbiF3C+5e1JoEuVo1AmANy3bncczg9ApjfeOd7y8y+WquZTipNkvhGXT/8edfLKLnq+ryX2PrByAfh2sznfXZcVJW+Za0RCwjkY3+gpQWT1AUGdoS/YqSlc5JdpTG2fN/Zu3ZhIDMUFXOoKr/n3GU+bqJtwC24xnhF4/7b0TEKtcvyIqr3kDVcIJ1vmAQ3+JqPrBFSM0zZOJN+UV3EAH47lW74qs9EVyAJ154XzlDTRvle6QtFsHa6Ygdfdg4bhy1AGnXy2AxY0cRx+YxSTh4Qx1aoq4iOmHEDWssaRo6AThhSen1TjElEZx5tQBlcG09omXAH5qLIcC9BD2TIuX5Pn8wTWgEpE0kyUMyquRb8h4NoOFe/ZZUQW3P7mR/6EA/MPQkTEz41JRRdfjKbtMOcO9q0gJCN5ujFXGg3l+skZwZ0t1C2CUEb81afdZNJk9+IFywFXvOlykwloWI2FS2eiMc69wq2/+Yn5dNH9IRuaLSrDbgETLWo/dtBhl9YiBq0prfdmtCVd+JdAtn61cKOcP3f9+ACmKtUVXmJhAYidqEyuso7JGNDrrjz4CoEhx9bQBAX7ViPJ8Tz+Rc5kTF65U6Xh7wrmLespMVTcK0AITNLB9991dN2d9rnTT1xjEC3ayN0/HmWhP62NHjZMWZ8rd2T1pYsyO5pCaA26pelj+7LEp3BxsXj9h6Xaq2wYJFtZyusELz85gxfa1J4huuHtiPOM+CLddhGPNejXRAy424s6jeQifu8hDLsw6kom/Uo3qpqF1qnhQNLH9Uhy4d7Fy+CA72oPBo5POF0fqzaPhUeX170ElbppmVVUe2g5vSpVQjSJurx0xWmrXj9q6GxHYQa686D4+MIa/qso+lHnIPVS0POjdqIdL9RR8e5ssTlBcQBvPX"}</script>
+<script>
+(function () {
+  var data = JSON.parse(document.getElementById('p').textContent);
+  var enc = new TextEncoder(), dec = new TextDecoder();
+  function b64(s) {
+    var bin = atob(s), u = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+    return u;
+  }
+  var form = document.getElementById('f');
+  var input = document.getElementById('pw');
+  var btn = document.getElementById('go');
+  var msg = document.getElementById('msg');
+  var busy = false;
+
+  function fail(text) {
+    msg.textContent = text;
+    msg.dataset.state = 'error';
+    input.value = '';
+    input.readOnly = false;
+    btn.disabled = false;
+    busy = false;
+    input.focus();
+  }
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (busy) return;
+    if (!globalThis.crypto || !crypto.subtle) return fail('Dieser Browser unterstützt Web Crypto nicht (nur HTTPS/localhost).');
+    busy = true;
+    btn.disabled = true;
+    input.readOnly = true;
+    msg.textContent = 'Schlüssel wird abgeleitet …';
+    msg.dataset.state = 'info';
+    try {
+      var base = await crypto.subtle.importKey('raw', enc.encode(input.value.normalize('NFKC')), 'PBKDF2', false, ['deriveKey']);
+      var key = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt: b64(data.salt), iterations: data.iter, hash: 'SHA-256' },
+        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+      );
+      var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(data.iv) }, key, b64(data.ct));
+      var app = document.getElementById('app');
+      app.innerHTML = dec.decode(plain);
+      document.getElementById('gate').remove();
+      app.hidden = false;
+    } catch (err) {
+      fail('Falsches Passwort.');
+    }
+  });
+})();
+</script>
+</body>
+</html>
