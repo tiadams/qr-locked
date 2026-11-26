@@ -11,6 +11,10 @@ der Browser nie an den Server überträgt. Ohne Token bleibt der Inhalt unlesbar
 - Cipher: AES-256-GCM (authentifiziert)
 - Entschlüsselung: ausschließlich clientseitig über die Web Crypto API
 
+Die Seite hat **kein Eingabefeld**: ohne gültigen Schlüssel im Fragment zeigt sie nur
+einen Hinweis. Der QR-Link trägt eine Build-Version im Query (`?v=N`), weil GitHub Pages
+`max-age=600` ausliefert und sonst bis zu 10 Minuten die alte Seite aus dem Cache kommt.
+
 ## Grenzen
 
 - Der QR-Code **ist** die Capability: wer ihn fotografiert, hat Zugang.
