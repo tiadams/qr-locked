@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <meta name="referrer" content="no-referrer">
-<title>Geschützter Bereich</title>
+<title>Gesch&uuml;tzter Bereich</title>
 <style>
   :root { color-scheme: dark; }
   * { box-sizing: border-box; }
@@ -20,94 +20,137 @@
   }
   .lock { font-size: 2rem; line-height: 1; }
   h1 { margin: .75rem 0 .35rem; font-size: 1.35rem; letter-spacing: -.01em; }
-  p.sub { margin: 0 0 1.5rem; color: #8b949e; font-size: .9rem; }
-  label { display: block; font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: #8b949e; margin-bottom: .4rem; }
-  input[type=password] {
-    width: 100%; padding: .7rem .85rem; border-radius: 8px; font-size: 1rem;
+  p.sub { margin: 0 0 1.25rem; color: #8b949e; font-size: .9rem; }
+  .pill {
+    display: inline-flex; align-items: center; gap: .45rem; margin-bottom: 1.25rem;
+    padding: .3rem .7rem; border-radius: 999px; font-size: .78rem;
+    background: #1f2a1f; color: #3fb950; border: 1px solid #238636;
+  }
+  .pill[data-state=error] { background: #2d1618; color: #f85149; border-color: #a5383f; }
+  details { margin-top: 1rem; border-top: 1px solid #21262d; padding-top: 1rem; }
+  summary { cursor: pointer; font-size: .82rem; color: #8b949e; }
+  label { display: block; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: #8b949e; margin: 1rem 0 .4rem; }
+  input, textarea {
+    width: 100%; padding: .65rem .8rem; border-radius: 8px; font-size: .9rem;
     background: #0d1117; color: #e6edf3; border: 1px solid #30363d; outline: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   }
-  input[type=password]:focus { border-color: #2f81f7; box-shadow: 0 0 0 3px rgb(47 129 247 / .25); }
+  input:focus { border-color: #2f81f7; box-shadow: 0 0 0 3px rgb(47 129 247 / .25); }
   button {
-    width: 100%; margin-top: .9rem; padding: .7rem 1rem; border: 0; border-radius: 8px;
-    background: #238636; color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer;
+    margin-top: .8rem; padding: .6rem 1rem; border: 0; border-radius: 8px;
+    background: #21262d; color: #e6edf3; font-size: .9rem; font-weight: 600; cursor: pointer;
   }
-  button:hover:not(:disabled) { background: #2ea043; }
-  button:disabled { opacity: .6; cursor: progress; }
-  #msg { min-height: 1.4rem; margin: .8rem 0 0; font-size: .875rem; color: #8b949e; }
+  button:hover { background: #30363d; }
+  #msg { min-height: 1.3rem; margin: .9rem 0 0; font-size: .875rem; color: #8b949e; }
   #msg[data-state=error] { color: #f85149; }
-  #msg[data-state=ok] { color: #3fb950; }
   footer { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #21262d; color: #6e7681; font-size: .75rem; }
   #app { width: 100%; max-width: 46rem; }
   #app h1 { font-size: 1.6rem; }
   #app a { color: #2f81f7; }
-  code { background: #21262d; padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+  #app code { background: #21262d; padding: .1em .35em; border-radius: 4px; font-size: .9em; }
+  .token { font-size: .7rem; word-break: break-all; color: #6e7681; margin-top: .5rem; }
 </style>
 </head>
 <body>
 <section class="card" id="gate">
   <div class="lock" aria-hidden="true">&#128274;</div>
-  <h1>Geschützter Bereich</h1>
-  <p class="sub">Dieser Inhalt ist mit AES-256 verschl&uuml;sselt. Die Entschl&uuml;sselung findet ausschlie&szlig;lich in deinem Browser statt.</p>
-  <form id="f" autocomplete="off">
-    <label for="pw">Passwort</label>
-    <input id="pw" type="password" name="pw" required autofocus autocapitalize="off" autocorrect="off" spellcheck="false">
-    <button id="go" type="submit">Entschl&uuml;sseln</button>
-  </form>
+  <h1>Gesch&uuml;tzter Bereich</h1>
+  <p class="sub">Dieser Inhalt ist mit AES-256 verschl&uuml;sselt und nur mit dem Schl&uuml;ssel aus dem QR-Code lesbar.</p>
+  <div class="pill" id="pill">&#128241; Bitte den QR-Code scannen</div>
+  <p class="sub" style="margin-bottom:0">Ohne g&uuml;ltigen Zugangsschl&uuml;ssel bleibt der Inhalt unlesbar &ndash; auch im Quelltext dieser Seite steht nur Ciphertext.</p>
+
+  <details id="manual">
+    <summary>Zugangsschl&uuml;ssel manuell eingeben</summary>
+    <label for="k">Schl&uuml;ssel</label>
+    <input id="k" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="43 Zeichen, aus dem QR-Link">
+    <button id="go" type="button">Entschl&uuml;sseln</button>
+  </details>
+
   <p id="msg" role="status" aria-live="polite"></p>
-  <footer>Kein Passwort wird &uuml;bertragen oder gespeichert. Ohne korrektes Passwort bleibt der Inhalt unlesbar.</footer>
+  <footer>Der Schl&uuml;ssel steht im URL-Fragment und wird nie an den Server &uuml;bertragen.</footer>
 </section>
 <main id="app" hidden></main>
 <noscript><p style="color:#f85149">JavaScript wird ben&ouml;tigt, um diese Seite zu entschl&uuml;sseln.</p></noscript>
-<script id="p" type="application/json">{"v":1,"alg":"AES-256-GCM","kdf":"PBKDF2-SHA256","iter":600000,"salt":"Q+qwnYjT/mpFQKFkKLv+aQ==","iv":"LKOFbZEXbwOEONG+","ct":"xjuP9cE7LvktFjqIc/YpDgup2aN7E4XxzH/3ikDDEZTUhMLSLkeSHIxIIQK6kTFNzs02HetNJ5NZguWAltvDU9kW0D3YmXKKpczcoaD/ILj/1TOkKiFGxrAeAcxam75V2DoTXFWzpo520HbkJUGXP872FgyP7mhsoAbTPwXOWV6R+6oMgkk+XO1IN+LB9sc1dTm98gGu+2TXqD8IrCAmQI3c5Yv2aMJv4EKUvDdghXbGpxPg77My97jIgCDfnwMByetDc5EExyVXpCfInRwRq4GGj4uIpzS3izL8QMTenhVqofKxRP1k4GSeuQ9TxMdFX3iO9ixi/S+5hkgpKpWnoyHW6uqoWbXiMVIFtj3nxb7ofooYxbS+E2On+DiCUHw0lGK/6MLPx5qxPk2i3cPRTYISIYileMBcQPiQPsse5jFVnxMS2IN1iK4Bf1Lqdr1mX6NsDwzp4wVW8oLD1I4zWgk5i29932+zhyE+8QSKdthojYtnzcot5fFxvSdD1lyHXl0xMvNM+9iTdDc+dTrY/C0UHt4nFhDeZCXVdvm0hdi0mrNz+DtmACGfb6VEr/8LGnIW0E5x5+O3oWMSPTtPLB5jFrk4Nv7y9wW9zUnL00eTg/jYKd3ImXsbWikRGfD3WznEjYcyul9TOfzUEagCutwvM6fwqzpU45fYDqgAwHVwbiF3C+5e1JoEuVo1AmANy3bncczg9ApjfeOd7y8y+WquZTipNkvhGXT/8edfLKLnq+ryX2PrByAfh2sznfXZcVJW+Za0RCwjkY3+gpQWT1AUGdoS/YqSlc5JdpTG2fN/Zu3ZhIDMUFXOoKr/n3GU+bqJtwC24xnhF4/7b0TEKtcvyIqr3kDVcIJ1vmAQ3+JqPrBFSM0zZOJN+UV3EAH47lW74qs9EVyAJ154XzlDTRvle6QtFsHa6Ygdfdg4bhy1AGnXy2AxY0cRx+YxSTh4Qx1aoq4iOmHEDWssaRo6AThhSen1TjElEZx5tQBlcG09omXAH5qLIcC9BD2TIuX5Pn8wTWgEpE0kyUMyquRb8h4NoOFe/ZZUQW3P7mR/6EA/MPQkTEz41JRRdfjKbtMOcO9q0gJCN5ujFXGg3l+skZwZ0t1C2CUEb81afdZNJk9+IFywFXvOlykwloWI2FS2eiMc69wq2/+Yn5dNH9IRuaLSrDbgETLWo/dtBhl9YiBq0prfdmtCVd+JdAtn61cKOcP3f9+ACmKtUVXmJhAYidqEyuso7JGNDrrjz4CoEhx9bQBAX7ViPJ8Tz+Rc5kTF65U6Xh7wrmLespMVTcK0AITNLB9991dN2d9rnTT1xjEC3ayN0/HmWhP62NHjZMWZ8rd2T1pYsyO5pCaA26pelj+7LEp3BxsXj9h6Xaq2wYJFtZyusELz85gxfa1J4huuHtiPOM+CLddhGPNejXRAy424s6jeQifu8hDLsw6kom/Uo3qpqF1qnhQNLH9Uhy4d7Fy+CA72oPBo5POF0fqzaPhUeX170ElbppmVVUe2g5vSpVQjSJurx0xWmrXj9q6GxHYQa686D4+MIa/qso+lHnIPVS0POjdqIdL9RR8e5ssTlBcQBvPX"}</script>
+<script id="p" type="application/json">{"v":2,"alg":"AES-256-GCM","kdf":"HKDF-SHA256","info":"qr-locked/v2 aes-256-gcm","salt":"14CEyhPvcIj17tMGBiwmkQ==","iv":"styT9b4MFqEdFFuj","ct":"EPkY17xdXhh0hkoN0m+r0nu+kNDZRgUyouxH2eYF07Y7ZvHmKeHN5jLiEYRsjld5puR2H0YgvXr7D/v6on88nGS5rbiPZA9hYjH2GU2UtPjv9ShtYcNJykd886UXFcXmKOX0TcBtZsWCgjLUpPWSqwxxDDuOoOvm/8cB/MtD+DjjDt+8MzraFgveSNJoA/7bqcvV0KzZLLQthEgU4zgf5ELfFE8dUFQ3yrHJeSr4wru2NzEIPzBBDCyvTMr8TpcYPow0yWooE9uJB4PLOdOCSKmpc/xV3XL64DY/mC9syxLgiHSuw+bVXWpSWbxazpORIeNiPxlR4VLzLMRqblVWNL943wakbYj4VvBe3LKondhnKIqhZmacweWosRpLGZ7Q/9h2oysVoiYCR5TJJ4Kgi4jjMK56+UDd/TjEK+ZhiuVyVJQ6YDEbp0Qujl36IupYQchyNr9Cjeu+2oGm6zTr1prRjzuK/dXvZz4F6mx76LC4MIeoI81/B1GofYRoJ0kDAuKWR08vPZzeY9maWmOhTuhy1wVtirk3s452i69jWHvdApUExPf4yYfxV7Jui3cWD/DnL1UNTDUy3fvmt8YlS0/1VlONe85f8vAkFXrfzC5Lx10VHga1CfLQ2V56zUdTsoipV9L5Ooym9jaoDl19zR+ucPktPnvn2SD1qRTdmYX2rVPYGUF2MjFu4hfmVfJtXyo8SbZwmCDzvzUP9wQJD+NkKMr25aLUzChV1oZEU7Hz8DcEgA0SkH0xvo3fwHpDAYxsd/hmblBRdAb71KGHMr50948wkgL7HSZqT2evYXx87tGsO6RnmROul71DherMJJ57+OVHQzxzydWkKZzSeMohCnnx1dOo5G3l4v1uGzXiPQbLmSKHsyEaxgAvaT6ruNldbezWVJrKDOfFrAERpPf7oY+mmKa8AlgzBDYsjo5bLnx2MuCZOfPdzUdN+SGMaodTjyorlMgHMbT0N6XHVDg9NJns1+kmX/JRP6sYDT5kGzSoABgGeZs379kztGY2pE3NafO8E8i/EVnYq9JBQKrC+67wVjtMZEpyjThTI80fvH10ePHUCBYYVOj/xlFq51fZJ13umwEGzKAYh5s0Zv3s4g9Ghhd6zW7jwFRBunRMfkC2qIhqMHDczh51Rdn3067Bb05yX8jSAYNwkWyBnII5J/fpm4YAeXstld9vSpFxQfl8bRHRHrISUphQPSCkwkrRC7ZevtHBE+j+evaxHREJ84b/nLR2Ws7DVdaH+tfEOK7AZjDWuDW04r287mLINf2RJUemxA+1VDPIqJolHTKd2+CwdeTYPUtqbVC0cHn3VyQNljLnczJDQHuSVP0fTE8j7WC/lYmZif++cgrZ7lI7akezeKo6Z/ME7SWoeRfeko0XZeJTg51oIAA3ZMKYVBeB5fJpyuBdsnjTu41zy2xtNvmZiR4xVdcwm9RmOBT6lgTx6xP+bZgwVCRy6GLUu8WSoCWh3LrpLEwNwxCZZU3YGRLBPJla09u3lhtTAPBLj7kh8mwhdOx/AQLGWsUdsfOKG9T8vCrIUU1upWJLJYDilLX3OZJHYfvALo8lKsmJWIYyIMu8tkC8gwRcQENdHEfckp3Z+p7oEaAvKBpwT5+MxJLi5A1kuREZTHc8AhPFeqW2lB1uC3JMWSuENFNfd/+WazsaOlxXT/h1GelewpAIlRenikFfIVHEbfpJ/7SNKOruofRdiOUh9RXtOibK4GBlOD6OVO09UBRDcPh2BXDAKR739SYVGcQ9zGV0o7M8erZLRTInQ9fuKKuburqeT9FQ"}</script>
 <script>
 (function () {
   var data = JSON.parse(document.getElementById('p').textContent);
   var enc = new TextEncoder(), dec = new TextDecoder();
-  function b64(s) {
+  var gate = document.getElementById('gate');
+  var app = document.getElementById('app');
+  var msg = document.getElementById('msg');
+  var pill = document.getElementById('pill');
+  var input = document.getElementById('k');
+  var go = document.getElementById('go');
+  var manual = document.getElementById('manual');
+  var busy = false;
+
+  function b64u(s) {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
     var bin = atob(s), u = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
     return u;
   }
-  var form = document.getElementById('f');
-  var input = document.getElementById('pw');
-  var btn = document.getElementById('go');
-  var msg = document.getElementById('msg');
-  var busy = false;
-
-  function fail(text) {
+  function b64(s) { return b64u(s); }
+  function setMsg(text, state) {
     msg.textContent = text;
-    msg.dataset.state = 'error';
-    input.value = '';
-    input.readOnly = false;
-    btn.disabled = false;
-    busy = false;
-    input.focus();
+    msg.dataset.state = state || 'info';
   }
 
-  form.addEventListener('submit', async function (e) {
-    e.preventDefault();
+  async function unlock(token) {
     if (busy) return;
-    if (!globalThis.crypto || !crypto.subtle) return fail('Dieser Browser unterstützt Web Crypto nicht (nur HTTPS/localhost).');
+    token = (token || '').trim();
+    if (!/^[A-Za-z0-9_-]{43}$/.test(token)) {
+      pill.textContent = '⚠️ Ungültiger Schlüssel';
+      pill.dataset.state = 'error';
+      setMsg('Der Schlüssel hat nicht das erwartete Format (43 Zeichen, base64url).', 'error');
+      return;
+    }
     busy = true;
-    btn.disabled = true;
-    input.readOnly = true;
-    msg.textContent = 'Schlüssel wird abgeleitet …';
-    msg.dataset.state = 'info';
+    go && (go.disabled = true);
+    setMsg('Entschlüssele …', 'info');
     try {
-      var base = await crypto.subtle.importKey('raw', enc.encode(input.value.normalize('NFKC')), 'PBKDF2', false, ['deriveKey']);
+      var ikm = await crypto.subtle.importKey('raw', b64u(token), 'HKDF', false, ['deriveKey']);
       var key = await crypto.subtle.deriveKey(
-        { name: 'PBKDF2', salt: b64(data.salt), iterations: data.iter, hash: 'SHA-256' },
-        base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+        { name: 'HKDF', hash: 'SHA-256', salt: b64(data.salt), info: enc.encode(data.info) },
+        ikm, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
       );
       var plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(data.iv) }, key, b64(data.ct));
-      var app = document.getElementById('app');
       app.innerHTML = dec.decode(plain);
-      document.getElementById('gate').remove();
+      gate.remove();
       app.hidden = false;
+      document.title = 'Geschützter Bereich';
     } catch (err) {
-      fail('Falsches Passwort.');
+      busy = false;
+      go && (go.disabled = false);
+      pill.textContent = '⚠️ Kein Zugang';
+      pill.dataset.state = 'error';
+      setMsg('Dieser Schlüssel passt nicht zu dieser Seite. Bitte den QR-Code erneut scannen.', 'error');
+      manual.open = true;
     }
-  });
+  }
+
+  go && go.addEventListener('click', function () { unlock(input.value); });
+  input && input.addEventListener('keydown', function (e) { if (e.key === 'Enter') unlock(input.value); });
+
+  function tokenFromHash() {
+    return new URLSearchParams(location.hash.slice(1)).get('k');
+  }
+  function tryHash() {
+    if (!gate.isConnected) return;
+    var token = tokenFromHash();
+    if (token) {
+      pill.textContent = '🔓 Schlüssel erkannt';
+      pill.dataset.state = 'ok';
+      unlock(token);
+    } else if (location.hash) {
+      manual.open = true;
+    }
+  }
+  window.addEventListener('hashchange', function () { busy = false; tryHash(); });
+  window.addEventListener('pageshow', function () { busy = false; tryHash(); });
+  tryHash();
 })();
 </script>
 </body>
