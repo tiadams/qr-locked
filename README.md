@@ -15,6 +15,9 @@ Die Seite hat **kein Eingabefeld**: ohne gültigen Schlüssel im Fragment zeigt 
 einen Hinweis. Der QR-Link trägt eine Build-Version im Query (`?v=N`), weil GitHub Pages
 `max-age=600` ausliefert und sonst bis zu 10 Minuten die alte Seite aus dem Cache kommt.
 
+Inhalt ist derzeit ein CV. Der Klartext bleibt lokal; hier liegt nur der Ciphertext.
+Druckvorlagen (Einzelcode + A4-Bogen mit 9 Codes) entstehen außerhalb des Repos.
+
 ## Grenzen
 
 - Der QR-Code **ist** die Capability: wer ihn fotografiert, hat Zugang.
